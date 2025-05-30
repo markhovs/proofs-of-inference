@@ -80,12 +80,6 @@ See the diagram above for a high-level overview of the system architecture and c
 
 ---
 
-## Contribution
-
-Pull requests, issues, and feature suggestions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) if available.
-
----
-
 ## License
 
 MIT
@@ -97,4 +91,3 @@ MIT
 - ETHGlobal Prague 2025
 - Filecoin & Akave for decentralized storage
 - ezkl for zkML tooling
-- Ethereum for programmable trust
