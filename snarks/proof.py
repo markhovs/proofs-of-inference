@@ -3,8 +3,24 @@ import ezkl
 import torch
 import json
 import asyncio
+import argparse
 
 async def main():
+    parser = argparse.ArgumentParser(description="Run inference and optionally generate a zk proof.")
+    parser.add_argument(
+        "--input",
+        nargs=6,
+        type=int,
+        required=True,
+        help="6 integers representing the input vector"
+    )
+    parser.add_argument(
+        "--prove",
+        action="store_true",
+        help="Flag to generate a proof"
+    )
+    args = parser.parse_args()
+
     proof_path = os.path.join('test.pf')
     witness_path = os.path.join('witness.json')
     compiled_model_path = os.path.join('network.compiled')
@@ -13,11 +29,9 @@ async def main():
     witness_path = "witness.json"
 
     shape = [1, 6]
-    x = torch.zeros(shape, dtype=torch.long)
-    x = torch.tensor([1, 2, 3, 4, 5, 6], dtype=torch.long)  
-    print(x)
+    x = torch.tensor(args.input, dtype=torch.long)  
     x = x.reshape(shape)
-    print(x)
+    print("Input vector:", x)
     data_array = ((x).detach().numpy()).reshape([-1]).tolist()
 
     data_json = dict(input_data = [data_array])
@@ -44,17 +58,17 @@ async def main():
 
     print("Predicted digits:", predicted_digits)
 
-    res = ezkl.mock(witness_path, compiled_model_path)
-    assert res == True
+    if args.prove:
+        res = ezkl.mock(witness_path, compiled_model_path)
+        assert res == True
 
-
-    res = ezkl.prove(
-            witness_path,
-            compiled_model_path,
-            pk_path,
-            proof_path,  
-            "single",
-        )
+        res = ezkl.prove(
+                witness_path,
+                compiled_model_path,
+                pk_path,
+                proof_path,  
+                "single",
+            )
 
 if __name__ == "__main__":
     asyncio.run(main())
