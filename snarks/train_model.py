@@ -153,12 +153,19 @@ class LittleTransformer(pl.LightningModule):
     else:
       return torch.optim.Adam(self.parameters(), lr=3e-4)
     
+  def on_train_epoch_end(self):
+    train_loss = self.trainer.callback_metrics.get("train_loss")
+    if train_loss is not None:
+        print(f"\nEpoch {self.current_epoch}: Train Loss = {train_loss:.4f}")
+
 
 if __name__ == "__main__":
-  model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=16, num_heads=2, ff_dim=16)
+  model = LittleTransformer(seq_len=6, max_value=10, layer_count=2, embed_dim=32, num_heads=2, ff_dim=32)
   trainer = pl.Trainer(enable_progress_bar=True, max_epochs=5)
-  data = AdditionDataModule(batch_size=64)
-  #data = ReverseDataModule(cnt=1000, seq_len=20)
+  
+  # data = AdditionDataModule(batch_size=64)
+  data = ReverseDataModule(cnt=1000, seq_len=6)
   #data = ParityDataModule(seq_len=14)
+  
   trainer.fit(model, data)
   torch.save(model.state_dict(), "little_transformer.pt")
