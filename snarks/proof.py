@@ -4,28 +4,26 @@ import torch
 import json
 import asyncio
 import argparse
+from datetime import datetime
 
 async def predict(input, data_path, compiled_model_path, witness_path):
     shape = [1, 6]
-    x = torch.tensor(input, dtype=torch.long)  
+    x = torch.tensor(input, dtype=torch.long)
     x = x.reshape(shape)
     print("Input vector:", x)
-    data_array = ((x).detach().numpy()).reshape([-1]).tolist()
-
-    data_json = dict(input_data = [data_array])
+    data_array = x.detach().numpy().reshape([-1]).tolist()
 
     # Serialize data into file:
-    json.dump(data_json, open(data_path, 'w' ))
-
+    json.dump({"input_data": [data_array]}, open(data_path, 'w'))
 
     res = await ezkl.gen_witness(data_path, compiled_model_path, witness_path)
     assert os.path.isfile(witness_path)
 
-    W = json.load(open("witness.json"))
-    rescaled_list = W["pretty_elements"]["rescaled_outputs"][0]  
+    W = json.load(open(witness_path))
+    rescaled_list = W["pretty_elements"]["rescaled_outputs"][0]
 
     # Group into 6 chunks of 10
-    groups = [ rescaled_list[i:i+10] for i in range(0, len(rescaled_list), 10) ]
+    groups = [rescaled_list[i:i+10] for i in range(0, len(rescaled_list), 10)]
 
     # Find argmax for each chunk
     predicted_digits = []
@@ -36,18 +34,19 @@ async def predict(input, data_path, compiled_model_path, witness_path):
 
     print("Predicted digits:", predicted_digits)
 
-    
+
 def proof(witness_path, compiled_model_path, pk_path, proof_path):
     res = ezkl.mock(witness_path, compiled_model_path)
-    assert res == True
+    assert res == True, "Mock run failed: constraints not satisfied"
 
     res = ezkl.prove(
-            witness_path,
-            compiled_model_path,
-            pk_path,
-            proof_path,  
-            "single",
-        )
+        witness_path,
+        compiled_model_path,
+        pk_path,
+        proof_path,
+        "single",
+    )
+
 
 def main():
     parser = argparse.ArgumentParser(description="Run inference and optionally generate a zk proof.")
@@ -59,26 +58,35 @@ def main():
         help="6 integers representing the input vector"
     )
     parser.add_argument(
+        "--model",
+        type=str,
+        required=True,
+        help="Model name, used to locate files under models/<model>-..."
+    )
+    parser.add_argument(
         "--prove",
         action="store_true",
         help="Flag to generate a proof"
     )
     args = parser.parse_args()
 
-    proof_path = os.path.join('test.pf')
-    witness_path = os.path.join('witness.json')
-    compiled_model_path = os.path.join('network.compiled')
-    pk_path = os.path.join('test.pk')
-    data_path = os.path.join('input.json')
-    witness_path = "witness.json"
+    timestamp = datetime.now().strftime("%m-%d-%H-%M-%S")
+    model_base = f"models/{args.model}"
+
+    # Paths
+    compiled_model_path = f"{model_base}-network.compiled"
+    pk_path = f"{model_base}-test.pk"
+    proof_path = f"{timestamp}-proof.json"
+    data_path = f"{timestamp}-input.json"
+    witness_path = f"{timestamp}-witness.json"
 
     asyncio.run(predict(args.input, data_path, compiled_model_path, witness_path))
-    
+
     if args.prove:
         proof(witness_path, compiled_model_path, pk_path, proof_path)
-        
+
 
 if __name__ == "__main__":
-    # example command
-    # python proof.py --input 1 3 3 4 5 6 --prove
+    # Example usage:
+    # python proof.py --input 1 3 3 4 5 6 --model network --prove
     main()
