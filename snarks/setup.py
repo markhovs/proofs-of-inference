@@ -15,7 +15,9 @@ async def main():
         help="Model name, used to locate files under models/<model>-..."
     )
     
-    model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=32, num_heads=1, ff_dim=32)
+    
+    model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=32, num_heads=4, ff_dim=32)
+    # model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=32, num_heads=1, ff_dim=32)
     # model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=16, num_heads=2, ff_dim=16)
 
     args = parser.parse_args()
@@ -73,7 +75,7 @@ async def main():
     # Serialize data into file:
     json.dump(data, open(cal_path, 'w'))
 
-    res = await ezkl.calibrate_settings(data_path, model_path, settings_path, "accuracy")
+    res = await ezkl.calibrate_settings(data_path, model_path, settings_path)
     assert res == True
 
     res = ezkl.compile_circuit(model_path, compiled_model_path, settings_path)

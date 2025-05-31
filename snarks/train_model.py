@@ -64,7 +64,11 @@ class WikipediaDataModule(BaseDataModule):
   
 def attention(queries, keys, values):
   d = queries.shape[-1]
-  scores = torch.matmul(queries, keys.transpose(-2,-1))/math.sqrt(d)
+  # scores = torch.matmul(queries, keys.transpose(-2,-1))/math.sqrt(d)
+    
+  scale = torch.tensor(1.0 / torch.sqrt(torch.tensor(d)), dtype=queries.dtype, device=queries.device)
+  scores = torch.matmul(queries, keys.transpose(-2, -1)) * scale
+
   attention_weights = F.softmax(scores, dim=-1)
   return torch.matmul(attention_weights, values)
 
@@ -117,7 +121,7 @@ class TokenAndPositionEmbedding(nn.Module):
     self.token_emb = nn.Embedding(vocab_size, embed_dim)
     self.pos_emb = nn.Embedding(maxlen, embed_dim)
   def forward(self, x):
-    pos = torch.arange(0, x.size(1), dtype=torch.int32, device=x.device)
+    pos = torch.arange(0, x.size(1), dtype=torch.int64, device=x.device)
     return self.token_emb(x) + self.pos_emb(pos).view(1, x.size(1), -1)
   
 class LittleTransformer(pl.LightningModule):
@@ -160,12 +164,13 @@ class LittleTransformer(pl.LightningModule):
 
 
 if __name__ == "__main__":
-  model = LittleTransformer(seq_len=6, max_value=10, layer_count=2, embed_dim=32, num_heads=2, ff_dim=32)
-  trainer = pl.Trainer(enable_progress_bar=True, max_epochs=5)
+  model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=32, num_heads=4, ff_dim=32)
+  # model = LittleTransformer(seq_len=6, max_value=10, layer_count=2, embed_dim=96, num_heads=4, ff_dim=32)
+  trainer = pl.Trainer(enable_progress_bar=True, max_epochs=25)
   
   # data = AdditionDataModule(batch_size=64)
   data = ReverseDataModule(cnt=1000, seq_len=6)
-  #data = ParityDataModule(seq_len=14)
+  # data = ParityDataModule(seq_len=6)
   
   trainer.fit(model, data)
-  torch.save(model.state_dict(), "little_transformer.pt")
+  torch.save(model.state_dict(), "transformer_model.pt")
