@@ -1,7 +1,9 @@
 .venv
+/venv
 lightning_logs/
 shell.nix
 __pycache__/
 *.json
 test.*
 network.*
+.python-version
