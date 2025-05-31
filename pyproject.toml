@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "proofs-of-inference"
+version = "0.1.0"
+description = "ETHGlobal Hackathon - Proof of Inference System"
+authors = ["Your Team"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.0"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
+python-dotenv = "^1.0.1"
+pydantic = "^2.6.1"
+httpx = "^0.26.0"
+web3 = "^6.15.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^24.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api" 
