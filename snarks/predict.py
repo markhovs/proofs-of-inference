@@ -34,20 +34,6 @@ async def predict(input, data_path, compiled_model_path, witness_path):
 
     print("Predicted digits:", predicted_digits)
 
-
-def proof(witness_path, compiled_model_path, pk_path, proof_path):
-    res = ezkl.mock(witness_path, compiled_model_path)
-    assert res == True, "Mock run failed: constraints not satisfied"
-
-    res = ezkl.prove(
-        witness_path,
-        compiled_model_path,
-        pk_path,
-        proof_path,
-        "single",
-    )
-
-
 def main():
     parser = argparse.ArgumentParser(description="Run inference and optionally generate a zk proof.")
     parser.add_argument(
@@ -63,28 +49,18 @@ def main():
         required=True,
         help="Model name, used to locate files under models/<model>-..."
     )
-    parser.add_argument(
-        "--prove",
-        action="store_true",
-        help="Flag to generate a proof"
-    )
-    args = parser.parse_args()
 
-    timestamp = datetime.now().strftime("%m-%d-%H-%M-%S")
+    args = parser.parse_args()
     model_base = f"models/{args.model}"
 
     # Paths
     compiled_model_path = f"{model_base}-network.compiled"
     pk_path = f"{model_base}-test.pk"
-    proof_path = f"{timestamp}-proof.json"
-    data_path = f"{timestamp}-input.json"
-    witness_path = f"{timestamp}-witness.json"
+    data_path = "input.json"
+    proof_path = "proof.json"
+    witness_path = "witness.json"
 
     asyncio.run(predict(args.input, data_path, compiled_model_path, witness_path))
-
-    if args.prove:
-        proof(witness_path, compiled_model_path, pk_path, proof_path)
-
 
 if __name__ == "__main__":
     # Example usage:
