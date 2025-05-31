@@ -103,4 +103,103 @@ class AkaveService:
         except ClientError as e:
             return e.response
         except Exception as e:
-            return {"error": str(e)} 
+            return {"error": str(e)}
+
+    async def upload_model_settings(self, model_id: str, settings: dict) -> dict:
+        key = f"settings/{model_id}.json"
+        return await self.upload_json(key, settings)
+
+    async def download_model_settings(self, model_id: str) -> dict:
+        key = f"settings/{model_id}.json"
+        return await self.download_json(key)
+
+    async def upload_verification_key(self, model_id: str, vk_data: bytes) -> dict:
+        key = f"verification-keys/{model_id}.vk"
+        try:
+            response = self.s3.put_object(
+                Bucket=self.bucket,
+                Key=key,
+                Body=vk_data,
+                ContentType='application/octet-stream'
+            )
+            return {"response": response, "bucket": self.bucket, "key": key}
+        except ClientError as e:
+            return {"error": e.response['Error']}
+        except Exception as e:
+            return {"error": str(e)}
+
+    async def download_verification_key(self, model_id: str) -> dict:
+        key = f"verification-keys/{model_id}.vk"
+        try:
+            response = self.s3.get_object(Bucket=self.bucket, Key=key)
+            vk_data = response['Body'].read()
+            return {"data": vk_data, "bucket": self.bucket, "key": key}
+        except ClientError as e:
+            return {"error": e.response['Error']}
+        except Exception as e:
+            return {"error": str(e)}
+
+    async def upload_proof(self, model_id: str, proof_id: str, proof_data: bytes) -> dict:
+        key = f"proofs/{model_id}/{proof_id}.json"
+        try:
+            response = self.s3.put_object(
+                Bucket=self.bucket,
+                Key=key,
+                Body=proof_data,
+                ContentType='application/json',
+                Metadata={'model_id': model_id}
+            )
+            # Extract checksums from the Akave response
+            return {
+                "response": response, 
+                "bucket": self.bucket, 
+                "key": key,
+                "etag": response.get('ETag'),
+                "checksum_crc32": response.get('ChecksumCRC32'),
+                "checksum_crc32c": response.get('ChecksumCRC32C'),
+                "checksum_sha1": response.get('ChecksumSHA1'),
+                "checksum_sha256": response.get('ChecksumSHA256'),
+                "checksum_type": response.get('ChecksumType'),
+                "version_id": response.get('VersionId'),
+                "size": response.get('Size')
+            }
+        except ClientError as e:
+            return {"error": e.response['Error']}
+        except Exception as e:
+            return {"error": str(e)}
+
+    async def download_proof(self, model_id: str, proof_id: str) -> dict:
+        key = f"proofs/{model_id}/{proof_id}.json"
+        try:
+            # Get object data
+            response = self.s3.get_object(Bucket=self.bucket, Key=key)
+            proof_data = response['Body'].read()
+            
+            # Get complete metadata including checksums
+            head_response = self.s3.head_object(Bucket=self.bucket, Key=key)
+            
+            return {
+                "data": proof_data, 
+                "bucket": self.bucket, 
+                "key": key, 
+                "metadata": response.get('Metadata', {}),
+                "etag": head_response.get('ETag'),
+                "checksum_crc32": head_response.get('ChecksumCRC32'),
+                "checksum_crc32c": head_response.get('ChecksumCRC32C'),
+                "checksum_sha1": head_response.get('ChecksumSHA1'),
+                "checksum_sha256": head_response.get('ChecksumSHA256'),
+                "checksum_type": head_response.get('ChecksumType'),
+                "last_modified": head_response.get('LastModified'),
+                "content_length": head_response.get('ContentLength'),
+                "version_id": head_response.get('VersionId')
+            }
+        except ClientError as e:
+            return {"error": e.response['Error']}
+        except Exception as e:
+            return {"error": str(e)}
+
+    async def list_proofs(self, model_id: str = None) -> dict:
+        prefix = f"proofs/{model_id}/" if model_id else "proofs/"
+        result = await self.list_files(prefix=prefix)
+        # Optionally, fetch metadata for each proof (requires extra S3 calls)
+        return result 
