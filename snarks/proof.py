@@ -5,31 +5,9 @@ import json
 import asyncio
 import argparse
 
-async def main():
-    parser = argparse.ArgumentParser(description="Run inference and optionally generate a zk proof.")
-    parser.add_argument(
-        "--input",
-        nargs=6,
-        type=int,
-        required=True,
-        help="6 integers representing the input vector"
-    )
-    parser.add_argument(
-        "--prove",
-        action="store_true",
-        help="Flag to generate a proof"
-    )
-    args = parser.parse_args()
-
-    proof_path = os.path.join('test.pf')
-    witness_path = os.path.join('witness.json')
-    compiled_model_path = os.path.join('network.compiled')
-    pk_path = os.path.join('test.pk')
-    data_path = os.path.join('input.json')
-    witness_path = "witness.json"
-
+async def predict(input, data_path, compiled_model_path, witness_path):
     shape = [1, 6]
-    x = torch.tensor(args.input, dtype=torch.long)  
+    x = torch.tensor(input, dtype=torch.long)  
     x = x.reshape(shape)
     print("Input vector:", x)
     data_array = ((x).detach().numpy()).reshape([-1]).tolist()
@@ -58,17 +36,49 @@ async def main():
 
     print("Predicted digits:", predicted_digits)
 
-    if args.prove:
-        res = ezkl.mock(witness_path, compiled_model_path)
-        assert res == True
+    
+def proof(witness_path, compiled_model_path, pk_path, proof_path):
+    res = ezkl.mock(witness_path, compiled_model_path)
+    assert res == True
 
-        res = ezkl.prove(
-                witness_path,
-                compiled_model_path,
-                pk_path,
-                proof_path,  
-                "single",
-            )
+    res = ezkl.prove(
+            witness_path,
+            compiled_model_path,
+            pk_path,
+            proof_path,  
+            "single",
+        )
+
+def main():
+    parser = argparse.ArgumentParser(description="Run inference and optionally generate a zk proof.")
+    parser.add_argument(
+        "--input",
+        nargs=6,
+        type=int,
+        required=True,
+        help="6 integers representing the input vector"
+    )
+    parser.add_argument(
+        "--prove",
+        action="store_true",
+        help="Flag to generate a proof"
+    )
+    args = parser.parse_args()
+
+    proof_path = os.path.join('test.pf')
+    witness_path = os.path.join('witness.json')
+    compiled_model_path = os.path.join('network.compiled')
+    pk_path = os.path.join('test.pk')
+    data_path = os.path.join('input.json')
+    witness_path = "witness.json"
+
+    asyncio.run(predict(args.input, data_path, compiled_model_path, witness_path))
+    
+    if args.prove:
+        proof(witness_path, compiled_model_path, pk_path, proof_path)
+        
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # example command
+    # python proof.py --input 1 3 3 4 5 6 --prove
+    main()
