@@ -3,7 +3,7 @@
 This is a **minimal, educational transformer model** implemented in PyTorch Lightning. It is designed to learn simple sequence-to-sequence tasks using transformer architecture.
 
 
-!!! [download keys from google drive](https://drive.google.com/drive/folders/1hM5NMIlcBYmYgpe5m1P0l9pX8LHl0XnQ?usp=sharing)
+Proof keys are too large to store on github download them from [this google drive](https://drive.google.com/drive/folders/1hM5NMIlcBYmYgpe5m1P0l9pX8LHl0XnQ?usp=sharing)
 
 ## Overview
 
