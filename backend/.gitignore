@@ -67,5 +67,6 @@ coverage.xml
 # Pyre type checker
 .pyre/ 
 
-# pk files
+# artifacts files
 *.pk
+temp/
