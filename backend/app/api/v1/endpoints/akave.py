@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from typing import Dict, Any, Optional
 from app.services.akave import AkaveService
 import json
+from fastapi.responses import Response
 
 router = APIRouter()
 
@@ -67,11 +68,12 @@ async def upload_verification_key(
 async def get_verification_key(
     model_id: str,
     akave: AkaveService = Depends(get_akave_service)
-) -> dict:
+):
     """
     Download verification key file (binary) for a given model_id.
     """
     result = await akave.download_verification_key(model_id)
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
-    return result 
+    vk_data = result["data"]
+    return Response(content=vk_data, media_type="application/octet-stream") 
