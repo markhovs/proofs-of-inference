@@ -6,7 +6,8 @@ import ezkl
 from train_model import LittleTransformer
 
 async def main():
-    model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=16, num_heads=2, ff_dim=16)
+    model = LittleTransformer(seq_len=6, max_value=10, layer_count=2, embed_dim=32, num_heads=2, ff_dim=32)
+    # model = LittleTransformer(seq_len=6, max_value=10, layer_count=1, embed_dim=16, num_heads=2, ff_dim=16)
     model.load_state_dict(torch.load("little_transformer.pt"))
 
     model_path = os.path.join('network.onnx')
@@ -14,10 +15,7 @@ async def main():
     pk_path = os.path.join('test.pk')
     vk_path = os.path.join('test.vk')
     settings_path = os.path.join('settings.json')
-
-    witness_path = os.path.join('witness.json')
     data_path = os.path.join('input.json')
-
 
     shape = [1, 6]
     # After training, export to onnx (network.onnx) and create a data file (input.json)
@@ -45,8 +43,7 @@ async def main():
     data_json = dict(input_data = [data_array])
 
     # Serialize data into file:
-    json.dump( data_json, open(data_path, 'w' ))
-
+    json.dump(data_json, open(data_path, 'w' ))
 
     # TODO: Dictionary outputs
     res = ezkl.gen_settings(model_path, settings_path)
@@ -69,14 +66,6 @@ async def main():
 
     res = await ezkl.get_srs( settings_path)
 
-    # now generate the witness file 
-    witness_path = "gan_witness.json"
-
-    res = await ezkl.gen_witness(data_path, compiled_model_path, witness_path)
-    assert os.path.isfile(witness_path)
-
-    res = ezkl.mock(witness_path, compiled_model_path)
-    assert res == True
 
     res = ezkl.setup(
             compiled_model_path,
