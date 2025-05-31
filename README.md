@@ -53,6 +53,14 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 
 ---
 
+---
+## Use-cases
+
+1. ***Honest ML infernce*** Users can be assured that the model they payed for generated the inference.
+2. ***Comparability*** Outputs from the same model can be compared and shared with the public.
+3. ***Benchmarks*** By gathering enough proofs Benchmarks can be created that reflect the real strength of the Model.
+---
+
 ## Tech Stack
 
 - **Flow EVM**: Smart contracts for proof verification and rewards.
