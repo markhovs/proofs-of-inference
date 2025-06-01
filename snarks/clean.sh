@@ -1,0 +1,1 @@
+rm input.json calibration.json settings.json network.onnx network.compiled test.pk test.vk witness.json
