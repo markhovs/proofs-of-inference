@@ -1,12 +1,10 @@
+![Cover image](cover_image.png)
+
 # zkML Proofs of inference - ETHGlobal Prague 2025
 
+This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, Hedera smart contracts and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
 
 ![Architecture Diagram](Flowchart.jpg)
-
-
-## Overview
-
-This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, Hedera smart contracts and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
 
 ## Key Components
 
@@ -43,8 +41,6 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 - **Proof Requests**: Request new proofs for current inputs.
 - **Verification**: Verify proofs locally or on-chain using the verifier.
 
----
-
 ## Usage
 
 1. **Model providers** train and upload their models, then generate and upload proving/verifying keys.
@@ -53,13 +49,11 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 4. The **smart contract** manages rewards and does proof verification.
 5. **Frontend** allows for proof requests, historical generated proofs and their status on-chain. 
 
----
 ## Use-cases
 
 1. ***Honest ML infernce*** Users can be assured that the model they payed for generated the inference.
 2. ***Comparability*** Outputs from the same model can be compared and shared with the public.
 3. ***Benchmarks*** By gathering enough proofs Benchmarks can be created that reflect the real strength of the Model.
----
 
 ## Tech Stack
 
@@ -70,15 +64,12 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 - **Frontend**: React/Next.js.
 - **Backend**: Node.js/Python for proof orchestration.
 
----
-
 ## Architecture
 
 See the diagram above for a high-level overview of the system architecture and component interactions.
 
 - testnet (Flow): 0xB743a73B763424e2c2d0dF00d747263d1846c57c (https://evm-testnet.flowscan.io/address/0xB743a73B763424e2c2d0dF00d747263d1846c57c)
 - testnet (Hedera): 0x6E3419d936bb7126900ecE3496e02397c0EDB9E1 (https://hashscan.io/testnet/contract/0.0.6094088?ps=1&pf=1&pr=1&pa=1)
----
 
 ## Getting Started
 
@@ -88,13 +79,11 @@ See the diagram above for a high-level overview of the system architecture and c
 4. **Run** the backend service for proof generation.
 5. **Start** the frontend to interface with users and verifiers.
 
----
 
 ## License
 
 MIT
 
----
 
 ## Acknowledgements
 
