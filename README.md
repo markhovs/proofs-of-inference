@@ -1,12 +1,13 @@
-![Cover image](cover_image.png)
+![Cover image](docs/images/cover_image.png)
 
 # zkML Proofs of inference - ETHGlobal Prague 2025
 
 This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, Hedera smart contracts and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
 
+![Architecture Diagram](docs/images/Flowchart.jpg)
+
 Presentation of the project is available at [Pitch](https://pitch.com/v/prague-hackathon-2025-ethglobal-vmvuwv).
 
-![Architecture Diagram](Flowchart.jpg)
 
 ## Key Components
 
@@ -68,7 +69,7 @@ Presentation of the project is available at [Pitch](https://pitch.com/v/prague-h
 
 ## Architecture
 
-See the diagram above for a high-level overview of the system architecture and component interactions.
+The flowchart in the [docs/images/Flowchart.jpg](docs/images/Flowchart.jpg) provides a high-level overview of the system architecture and component interactions, illustrating how data flows between the different components of the system.
 
 - testnet (Flow): 0xB743a73B763424e2c2d0dF00d747263d1846c57c (https://evm-testnet.flowscan.io/address/0xB743a73B763424e2c2d0dF00d747263d1846c57c)
 - testnet (Hedera): 0x6E3419d936bb7126900ecE3496e02397c0EDB9E1 (https://hashscan.io/testnet/contract/0.0.6094088?ps=1&pf=1&pr=1&pa=1)

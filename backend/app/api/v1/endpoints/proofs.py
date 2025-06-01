@@ -116,10 +116,19 @@ async def verify_proof(model_id: str, proof_id: str):
     settings_result = await akave.download_model_settings(model_id)
     if "error" in proof_result or "error" in vk_result or "error" in settings_result:
         raise HTTPException(status_code=404, detail="Required file not found in Akave")
-    # TODO: Run actual verification logic here
+    
+    # Use the ezkl_service to actually verify the proof
+    verification_result = await ezkl_service.verify_proof(
+        proof_data=proof_result["data"],
+        model_id=model_id
+    )
+    
+    # Pass the verification results back to the client
     return {
         "proof_id": proof_id,
         "model_id": model_id,
-        "verified": True, # Stub
-        "details": "Proof is valid (stub)"
+        "verified": verification_result.get("verified", False),
+        "proof_valid": verification_result.get("proof_valid", False),
+        "details": verification_result.get("details", "Proof verification completed"),
+        "error": verification_result.get("error")
     } 
