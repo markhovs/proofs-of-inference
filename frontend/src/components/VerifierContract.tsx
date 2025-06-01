@@ -68,7 +68,17 @@ const VerifierContract = ({
   // Handle errors
   useEffect(() => {
     if (contractError || receiptError) {
-      const errorMessage = `Processing failed: ${(contractError || receiptError)?.message}`;
+      const error = contractError || receiptError;
+      console.error('VerifierContract - Contract error:', error);
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        code: (error as any)?.code,
+        data: (error as any)?.data,
+        cause: (error as any)?.cause
+      });
+      
+      const errorMessage = `Processing failed: ${error?.message}`;
       setVerificationResult(errorMessage);
       onVerificationResult?.({ success: false, message: errorMessage });
     }
@@ -87,6 +97,12 @@ const VerifierContract = ({
 
     try {
       setVerificationResult(null);
+      
+      // Log what's being sent to the contract
+      console.log('Sending to contract:');
+      console.log('Contract Address:', contractAddress);
+      console.log('Proof Data:', proofData);
+      console.log('Akave Key:', akaveKey);
       
       await writeContract({
         address: contractAddress as `0x${string}`,
