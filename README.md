@@ -1,7 +1,7 @@
 # zkML Proof Marketplace - ETHGlobal Prague 2025
 
 
-![Architecture Diagram](Flowchart.jpg)
+![Architecture Diagram](docs/images/Flowchart.jpg)
 
 
 ## Overview
@@ -74,7 +74,7 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 
 ## Architecture
 
-See the diagram above for a high-level overview of the system architecture and component interactions.
+The flowchart in the [docs/images/Flowchart.jpg](docs/images/Flowchart.jpg) provides a high-level overview of the system architecture and component interactions, illustrating how data flows between the different components of the system.
 
 - testnet (Flow): 0xF5C3c9058F3A6adD15066054116DA13B914351fd (https://evm-testnet.flowscan.io/address/0xF5C3c9058F3A6adD15066054116DA13B914351fd)
 - testnet (Hedera): 0x6E3419d936bb7126900ecE3496e02397c0EDB9E1 (https://hashscan.io/testnet/contract/0.0.6094088?ps=1&pf=1&pr=1&pa=1)
