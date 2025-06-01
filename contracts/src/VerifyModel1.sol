@@ -7,7 +7,7 @@ interface Halo2Verifier {
 }
 
 contract VerifyModel1 {
-    address HALO2_VERIFIER = 0x967AfAfb5385dC10c7108bdb580D4644C9f8d8cA;
+    address HALO2_VERIFIER = 0x532f5b3e6e8b31671E393d38a6F5Fa5AB9E5c03A;
     struct ProofOnAkave{
         string key;
         bytes32 hash;
