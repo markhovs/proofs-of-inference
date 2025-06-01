@@ -1,9 +1,10 @@
 import { http, createConfig } from '@wagmi/core';
-import { flowTestnet } from '@wagmi/core/chains';
+import { flowTestnet, hederaTestnet } from '@wagmi/core/chains';
 
 export const flowConfig = createConfig({
-  chains: [flowTestnet],
+  chains: [flowTestnet, hederaTestnet],
   transports: {
     [flowTestnet.id]: http(),
+    [hederaTestnet.id]: http(),
   },
 });
