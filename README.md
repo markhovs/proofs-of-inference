@@ -6,6 +6,9 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 
 ![Architecture Diagram](docs/images/Flowchart.jpg)
 
+Presentation of the project is available at [Pitch](https://pitch.com/v/prague-hackathon-2025-ethglobal-vmvuwv).
+
+
 ## Key Components
 
 ### 1. AI Model Training (Model Provider)
