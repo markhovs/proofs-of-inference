@@ -4,7 +4,7 @@
 
 This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, Hedera smart contracts and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
 
-Presentation of the project is in file *PragueHackathon2025@ETHGlobal.pptx* and also avalible at [Pitch](https://pitch.com/v/prague-hackathon-2025-ethglobal-vmvuwv).
+Presentation of the project is available at [Pitch](https://pitch.com/v/prague-hackathon-2025-ethglobal-vmvuwv).
 
 ![Architecture Diagram](Flowchart.jpg)
 
