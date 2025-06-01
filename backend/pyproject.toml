@@ -14,6 +14,9 @@ pydantic = "^2.6.1"
 httpx = "^0.26.0"
 web3 = "^6.15.1"
 boto3 = "^1.34.69"
+python-multipart = "^0.0.20"
+ezkl = "22.0.1"
+torch = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

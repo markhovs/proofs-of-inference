@@ -1,22 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Dict, Any, Optional
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from typing import Dict, Any, Optional
 from app.services.akave import AkaveService
+import json
+from fastapi.responses import Response
 
 router = APIRouter()
 
 def get_akave_service():
     return AkaveService()
-
-@router.post("/bucket/create")
-async def create_bucket(
-    bucket_name: Optional[str] = None,
-    akave: AkaveService = Depends(get_akave_service)
-) -> dict:
-    """
-    Create a new bucket. If no bucket_name is provided, 
-    uses the one from configuration.
-    """
-    return await akave.create_bucket(bucket_name)
 
 @router.get("/test")
 async def test_connection(
@@ -27,42 +18,62 @@ async def test_connection(
     """
     return await akave.test_connection()
 
-@router.post("/upload")
-async def upload_test_file(
-    data: Dict[str, Any],
-    key: str,
+@router.post("/model-settings/{model_id}")
+async def upload_model_settings(
+    model_id: str,
+    file: UploadFile = File(...),
     akave: AkaveService = Depends(get_akave_service)
 ) -> dict:
     """
-    Upload a test JSON file to Akave O3.
-    Returns the upload response including S3 response data and file metadata.
+    Upload model settings file (JSON) for a given model_id.
     """
-    response = await akave.upload_json(key, data)
-    if "error" in response:
-        raise HTTPException(status_code=500, detail=response["error"])
-    return response
+    try:
+        settings = json.loads(await file.read())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid JSON file")
+    result = await akave.upload_model_settings(model_id, settings)
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+    return result
 
-@router.get("/list")
-async def list_files(
-    prefix: str = None,
-    akave: AkaveService = Depends(get_akave_service)
-) -> Dict[str, Any]:
-    """
-    List files in the Akave O3 bucket.
-    Returns a dictionary containing the listing response and metadata.
-    """
-    return await akave.list_files(prefix)
-
-@router.get("/download/{key:path}")
-async def download_file(
-    key: str,
+@router.get("/model-settings/{model_id}")
+async def get_model_settings(
+    model_id: str,
     akave: AkaveService = Depends(get_akave_service)
 ) -> dict:
     """
-    Download a JSON file from Akave O3.
-    The key can include forward slashes for nested paths.
+    Download model settings file (JSON) for a given model_id.
     """
-    response = await akave.download_json(key)
-    if "error" in response:
-        raise HTTPException(status_code=500, detail=response["error"])
-    return response 
+    result = await akave.download_model_settings(model_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
+@router.post("/verification-key/{model_id}")
+async def upload_verification_key(
+    model_id: str,
+    file: UploadFile = File(...),
+    akave: AkaveService = Depends(get_akave_service)
+) -> dict:
+    """
+    Upload verification key file (binary) for a given model_id.
+    """
+    vk_data = await file.read()
+    result = await akave.upload_verification_key(model_id, vk_data)
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+    return result
+
+@router.get("/verification-key/{model_id}")
+async def get_verification_key(
+    model_id: str,
+    akave: AkaveService = Depends(get_akave_service)
+):
+    """
+    Download verification key file (binary) for a given model_id.
+    """
+    result = await akave.download_verification_key(model_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    vk_data = result["data"]
+    return Response(content=vk_data, media_type="application/octet-stream") 

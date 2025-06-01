@@ -1,0 +1,58 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenv
+.venv/
+venv/
+ENV/
+
+# Poetry
+poetry.lock
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Others
+*.swp
+*.swo
+
+# Node
+node_modules/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Coverage
+.coverage
+htmlcov/
+
+# System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon? 
