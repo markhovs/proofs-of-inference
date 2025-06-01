@@ -1,6 +1,6 @@
 # zkML Proof Marketplace - ETHGlobal Prague 2025
 
-![Architecture Diagram](image1)
+![Architecture Diagram](Flowchart.jpg)
 
 ## Overview
 
