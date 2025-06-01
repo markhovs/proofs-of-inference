@@ -1,4 +1,4 @@
-# zkML Proof Marketplace - ETHGlobal Prague 2025
+# zkML Proofs of inference - ETHGlobal Prague 2025
 
 
 ![Architecture Diagram](Flowchart.jpg)
