@@ -4,7 +4,7 @@
 
 ## Overview
 
-This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
+This project is a decentralized marketplace for Zero-Knowledge Machine Learning (zkML) proofs. It enables users to request, verify, and pay for cryptographic proofs of model inferences, using decentralized storage and smart contracts for persistence and escrow. Designed for ETHGlobal Prague 2025, it leverages cutting-edge technologies like Filecoin, Akave, Hedera smart contracts and Flow EVM smart contracts to provide trustless, auditable, and privacy-preserving ML proof generation and verification.
 
 ## Key Components
 
@@ -52,8 +52,6 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 5. **Frontend** allows for proof requests, historical generated proofs and their status on-chain. 
 
 ---
-
----
 ## Use-cases
 
 1. ***Honest ML infernce*** Users can be assured that the model they payed for generated the inference.
@@ -64,6 +62,7 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 ## Tech Stack
 
 - **Flow EVM**: Smart contracts for proof verification and rewards.
+- **Hedera**: Smart contracts for proof verification and rewards.
 - **Filecoin/Akave**: Decentralized storage for models, proofs, and logs.
 - **ezkl**: Quantization and zkML circuit compilation.
 - **Frontend**: React/Next.js (assumed; adapt as appropriate for your codebase).
@@ -75,6 +74,8 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 
 See the diagram above for a high-level overview of the system architecture and component interactions.
 
+- testnet (Flow): 0xF5C3c9058F3A6adD15066054116DA13B914351fd (https://evm-testnet.flowscan.io/address/0xF5C3c9058F3A6adD15066054116DA13B914351fd)
+- testnet (Hedera): 0x6E3419d936bb7126900ecE3496e02397c0EDB9E1 (https://hashscan.io/testnet/contract/0.0.6094088?ps=1&pf=1&pr=1&pa=1)
 ---
 
 ## Getting Started
@@ -98,4 +99,5 @@ MIT
 - ETHGlobal Prague 2025
 - Filecoin & Akave for decentralized storage
 - ezkl for zkML tooling
-- Flow for providing the smart contract platform
+- Flow and Hedera for providing the smart contract platform
+
