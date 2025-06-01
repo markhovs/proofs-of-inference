@@ -1,0 +1,20 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "bytes",
+				"name": "proof",
+				"type": "bytes"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "instances",
+				"type": "uint256[]"
+			}
+		],
+		"name": "verifyProof",
+		"outputs": [],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
