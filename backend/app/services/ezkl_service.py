@@ -391,3 +391,48 @@ class EzklService:
                     os.remove(file_path)
             except Exception:
                 pass  # Silently ignore cleanup errors
+    
+    def encode_evm_calldata(self, proof_data: str) -> str:
+        """
+        Encode proof data as EVM calldata for smart contract verification.
+        
+        Args:
+            proof_data: JSON string containing the proof
+            
+        Returns:
+            Hex-encoded calldata string with 0x prefix
+        """
+        try:
+            # Get temp paths
+            temp_paths = self._get_temp_paths()
+            
+            # Write proof data to temporary file
+            proof_path = temp_paths["proof"]
+            with open(proof_path, 'w') as f:
+                if isinstance(proof_data, bytes):
+                    f.write(proof_data.decode('utf-8'))
+                else:
+                    f.write(proof_data)
+            
+            # Generate calldata using ezkl
+            calldata_path = os.path.join(self.temp_dir, "calldata.bin")
+            
+            # Generate EVM calldata
+            res = ezkl.encode_evm_calldata(
+                proof_path,
+                calldata_path,
+            )
+            
+            # Convert to hex string
+            if isinstance(res, bytes):
+                calldata_hex = "0x" + ''.join(f"{byte:02x}" for byte in res)
+            else:
+                # If ezkl.encode_evm_calldata returns the calldata directly
+                with open(calldata_path, 'rb') as f:
+                    calldata_bytes = f.read()
+                calldata_hex = "0x" + ''.join(f"{byte:02x}" for byte in calldata_bytes)
+            
+            return calldata_hex
+            
+        except Exception as e:
+            raise Exception(f"EVM encoding failed: {str(e)}")

@@ -1,6 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  useAccount,
+  useConnect,
+  useConnectors,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from 'wagmi';
 import { proofsApi } from '@/api';
 import { VerificationResponse } from '@/types';
+import contractABI from '../app/contract.json';
+
+const contractAddress = process.env.NEXT_PUBLIC_FLOW_CONTRACT_ADDRESS;
 
 interface ProofDisplayData {
   key: string;
@@ -22,6 +32,85 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
   const [result, setResult] = useState<VerificationResponse | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [onChainResult, setOnChainResult] = useState<string | null>(null);
+  const [isProcessingOnChain, setIsProcessingOnChain] = useState(false);
+  
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
+  const connectors = useConnectors();
+  
+  const { 
+    writeContract, 
+    data: hash, 
+    isPending: isContractPending, 
+    error: contractError 
+  } = useWriteContract();
+
+  const { 
+    isLoading: isConfirming, 
+    isSuccess: isConfirmed,
+    error: receiptError 
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const handleVerifyOnChain = async () => {
+    if (!isConnected) {
+      if (connectors.length > 0) {
+        connect({ connector: connectors[0] });
+      }
+      return;
+    }
+
+    if (!contractAddress) {
+      setOnChainResult('Contract address not configured');
+      return;
+    }
+    
+    try {
+      setIsProcessingOnChain(true);
+      setOnChainResult(null);
+      setError(null);
+      
+      // Get proof details with EVM encoding enabled
+      const proofDetails = await proofsApi.getProofDetails(proof.model_id, proof.proof_id, true); // true for EVM encoding
+      const evmEncodedProofData = proofDetails.data;
+      
+      // Submit to blockchain using EVM-encoded proof data
+      await writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: contractABI,
+        functionName: 'processProof',
+        args: [evmEncodedProofData as `0x${string}`, proof.key],
+      });
+      
+    } catch (err) {
+      console.error('On-chain verification failed:', err);
+      setOnChainResult(`Failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setIsProcessingOnChain(false);
+    }
+  };
+
+  // Handle transaction status updates
+  useEffect(() => {
+    if (isContractPending || isConfirming) {
+      setIsProcessingOnChain(true);
+    } else {
+      setIsProcessingOnChain(false);
+    }
+  }, [isContractPending, isConfirming]);
+
+  useEffect(() => {
+    if (isConfirmed) {
+      setOnChainResult(`✅ Proof processed successfully on-chain! Tx: ${hash}`);
+    }
+  }, [isConfirmed, hash]);
+
+  useEffect(() => {
+    if (contractError || receiptError) {
+      setOnChainResult(`❌ Transaction failed: ${(contractError || receiptError)?.message}`);
+    }
+  }, [contractError, receiptError]);
 
   const handleVerify = async () => {
     try {
@@ -108,14 +197,55 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
 
           {/* Verification Section */}
           <div className="space-y-4">
-            <button
-              onClick={handleVerify}
-              disabled={isVerifying}
-              className={`w-full py-3 px-4 rounded-lg text-white font-bold text-lg shadow transition-all duration-200
-                ${isVerifying ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 hover:from-blue-700 hover:to-purple-700 hover:scale-[1.02]'}`}
-            >
-              {isVerifying ? 'Verifying...' : 'Verify Proof'}
-            </button>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <button
+                onClick={handleVerify}
+                disabled={isVerifying}
+                className={`py-3 px-4 rounded-lg text-white font-bold text-sm shadow transition-all duration-200
+                  ${isVerifying ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-[1.02]'}`}
+              >
+                {isVerifying ? 'Verifying...' : 'Verify Off-Chain'}
+              </button>
+              
+              <button
+                onClick={handleVerifyOnChain}
+                disabled={isProcessingOnChain}
+                className={`py-3 px-4 rounded-lg text-white font-bold text-sm shadow transition-all duration-200
+                  ${isProcessingOnChain ? 'bg-gray-400 cursor-not-allowed' : 
+                    !isConnected ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800' :
+                    'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-[1.02]'}`}
+              >
+                {isProcessingOnChain ? 'Processing...' : 
+                 !isConnected ? 'Connect & Verify On-Chain' : 'Verify On-Chain'}
+              </button>
+            </div>
+
+            {/* Wallet Connection Status */}
+            {isConnected && (
+              <div className="text-xs text-gray-500 text-center">
+                Connected: {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Unknown'}
+              </div>
+            )}
+
+            {/* On-Chain Result Display */}
+            {onChainResult && (
+              <div className={`p-4 rounded-lg border ${
+                onChainResult.includes('✅') 
+                  ? 'bg-green-50 border-green-200' 
+                  : onChainResult.includes('❌')
+                  ? 'bg-red-50 border-red-200'
+                  : 'bg-yellow-50 border-yellow-200'
+              }`}>
+                <div className="font-semibold text-sm">
+                  {onChainResult}
+                </div>
+                {hash && (
+                  <div className="mt-2 text-xs text-gray-600">
+                    <span className="font-mono break-all">Transaction Hash: {hash}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Error Display */}
             {error && (

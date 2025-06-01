@@ -10,8 +10,17 @@ export class ProofsApi {
   /**
    * Generate proof for the most recent prediction
    */
-  async generateProof(): Promise<ProofGenerationResponse> {
-    return apiClient.post<ProofGenerationResponse>('/proofs/generate');
+  async generateProof(input_hash?: string, model_hash?: string): Promise<ProofGenerationResponse> {
+    const requestData = {
+      input_hash: input_hash || "latest_prediction", // Default value for latest prediction
+      model_hash: model_hash,
+      metadata: {
+        source: "frontend_request",
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+    return apiClient.post<ProofGenerationResponse>('/proofs/request', requestData);
   }
 
   /**
@@ -25,8 +34,9 @@ export class ProofsApi {
   /**
    * Get detailed information about a specific proof
    */
-  async getProofDetails(model_id: string, proof_id: string): Promise<ProofDetails> {
-    return apiClient.get<ProofDetails>(`/proofs/${model_id}/${proof_id}`);
+  async getProofDetails(model_id: string, proof_id: string, evmEncoding?: boolean): Promise<ProofDetails> {
+    const params = evmEncoding ? { evm_encoding: 'true' } : undefined;
+    return apiClient.get<ProofDetails>(`/proofs/${model_id}/${proof_id}`, params);
   }
 
   /**
@@ -41,6 +51,11 @@ export class ProofsApi {
    * Key format: "proofs/{model_id}/{proof_id}.json"
    */
   parseProofKey(key: string): { model_id: string; proof_id: string } | null {
+    // Handle undefined, null, or empty keys
+    if (!key || typeof key !== 'string') {
+      return null;
+    }
+    
     const match = key.match(/^proofs\/([^/]+)\/([^/]+)\.json$/);
     if (!match) return null;
     

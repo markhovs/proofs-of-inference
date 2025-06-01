@@ -63,12 +63,12 @@ export function useProofGeneration() {
   const [result, setResult] = useState<ProofGenerationResponse | null>(null);
   const [error, setError] = useState<AppError | null>(null);
 
-  const generateProof = useCallback(async () => {
+  const generateProof = useCallback(async (input_hash?: string, model_hash?: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await proofsApi.generateProof();
+      const response = await proofsApi.generateProof(input_hash, model_hash);
       setResult(response);
       return response;
     } catch (err) {

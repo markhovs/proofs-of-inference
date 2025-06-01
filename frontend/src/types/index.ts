@@ -57,6 +57,7 @@ export interface ProofDetails {
   bucket: string;
   key: string;
   metadata: Record<string, unknown>;
+  evm_encoded?: boolean;
   etag?: string;
   checksum_crc32?: string;
   checksum_crc32c?: string;
