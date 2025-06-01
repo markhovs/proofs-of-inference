@@ -76,6 +76,31 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
       const proofDetails = await proofsApi.getProofDetails(proof.model_id, proof.proof_id, true); // true for EVM encoding
       const evmEncodedProofData = proofDetails.data;
       
+      // Log detailed information about the proof data
+      console.log('ProofVerifyModal - EVM-encoded proof data:');
+      console.log('Model ID:', proof.model_id);
+      console.log('Proof ID:', proof.proof_id);
+      console.log('Akave Key:', proof.key);
+      console.log('Contract Address:', contractAddress);
+      
+      // Check if the data exists and has the correct format
+      if (!evmEncodedProofData) {
+        console.error('Error: No proof data received from API');
+        throw new Error('No proof data received from API');
+      }
+      
+      // Detailed logging of proof data
+      const dataStr = evmEncodedProofData.toString();
+      console.log('EVM-encoded data type:', typeof evmEncodedProofData);
+      console.log('EVM-encoded data length:', dataStr.length);
+      console.log('EVM-encoded data starts with 0x:', dataStr.startsWith('0x'));
+      console.log('EVM-encoded data (first 200 chars):', dataStr.substring(0, 200) + '...');
+      
+      // Validate proof data format
+      if (!dataStr.startsWith('0x')) {
+        console.warn('Warning: Proof data does not start with 0x prefix');
+      }
+      
       // Submit to blockchain using EVM-encoded proof data
       await writeContract({
         address: contractAddress as `0x${string}`,
@@ -86,7 +111,16 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
       
     } catch (err) {
       console.error('On-chain verification failed:', err);
-      setOnChainResult(`Failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      
+      // Format error message to be more readable and prevent overflow
+      let errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      
+      // For long error messages, truncate and make more readable
+      if (errorMessage.length > 150) {
+        errorMessage = `${errorMessage.substring(0, 150)}...`;
+      }
+      
+      setOnChainResult(`❌ Failed: ${errorMessage}`);
       setIsProcessingOnChain(false);
     }
   };
@@ -108,7 +142,25 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
 
   useEffect(() => {
     if (contractError || receiptError) {
-      setOnChainResult(`❌ Transaction failed: ${(contractError || receiptError)?.message}`);
+      const error = contractError || receiptError;
+      console.error('Contract verification error:', error);
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        code: (error as any)?.code,
+        data: (error as any)?.data,
+        cause: (error as any)?.cause
+      });
+      
+      // Extract the most important part of the error message
+      let errorMessage = error?.message || 'Unknown error';
+      
+      // If it's the "Invalid proof" error, provide a clearer message
+      if (errorMessage.includes('Invalid proof')) {
+        errorMessage = 'Transaction reverted: Invalid proof data';
+      }
+      
+      setOnChainResult(`❌ Transaction failed: ${errorMessage}`);
     }
   }, [contractError, receiptError]);
 
@@ -188,8 +240,18 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
             {proof.checksum && (
               <div>
                 <div className="text-base font-semibold text-gray-800 mb-2">Checksum</div>
-                <div className="font-mono text-gray-900 text-xs bg-gray-50 p-3 rounded-lg break-all select-all">
-                  {proof.checksum}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3">
+                  <div className="flex items-center mb-1.5">
+                    <div className="bg-blue-600 rounded-md p-1 mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-semibold text-blue-800">SHA256</span>
+                  </div>
+                  <div className="font-mono text-xs text-blue-700 bg-white/70 p-2 rounded border border-blue-100 break-all select-all">
+                    {proof.checksum}
+                  </div>
                 </div>
               </div>
             )}
@@ -236,8 +298,10 @@ export default function ProofVerifyModal({ proof, onClose }: ProofVerifyModalPro
                   ? 'bg-red-50 border-red-200'
                   : 'bg-yellow-50 border-yellow-200'
               }`}>
-                <div className="font-semibold text-sm">
-                  {onChainResult}
+                <div className="font-semibold text-sm break-words overflow-hidden">
+                  {onChainResult.length > 300 
+                    ? `${onChainResult.substring(0, 300)}...` 
+                    : onChainResult}
                 </div>
                 {hash && (
                   <div className="mt-2 text-xs text-gray-600">

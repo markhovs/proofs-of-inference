@@ -138,15 +138,36 @@ export default function ProofDetailsModal({ proof, onClose }: ProofDetailsModalP
                   {(details.checksum_sha256 || details.checksum_crc32) && (
                     <div>
                       <div className="text-base font-semibold text-gray-800 mb-2">Checksums</div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {details.checksum_sha256 && (
-                          <div className="font-mono text-xs bg-gray-50 p-3 rounded-lg break-all select-all">
-                            <span className="text-gray-600">SHA256:</span> {details.checksum_sha256}
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3">
+                            <div className="flex items-center mb-1.5">
+                              <div className="bg-blue-600 rounded-md p-1 mr-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <span className="text-sm font-semibold text-blue-800">SHA256 Checksum</span>
+                            </div>
+                            <div className="font-mono text-xs text-blue-700 bg-white/70 p-2 rounded border border-blue-100 break-all select-all">
+                              {details.checksum_sha256}
+                            </div>
                           </div>
                         )}
                         {details.checksum_crc32 && (
-                          <div className="font-mono text-xs bg-gray-50 p-3 rounded-lg break-all select-all">
-                            <span className="text-gray-600">CRC32:</span> {details.checksum_crc32}
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-lg p-3">
+                            <div className="flex items-center mb-1.5">
+                              <div className="bg-purple-600 rounded-md p-1 mr-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" />
+                                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                                </svg>
+                              </div>
+                              <span className="text-sm font-semibold text-purple-800">CRC32 Checksum</span>
+                            </div>
+                            <div className="font-mono text-xs text-purple-700 bg-white/70 p-2 rounded border border-purple-100 break-all select-all">
+                              {details.checksum_crc32}
+                            </div>
                           </div>
                         )}
                       </div>
