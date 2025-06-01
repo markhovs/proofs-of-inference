@@ -5,6 +5,8 @@ This is a **minimal, educational transformer model** implemented in PyTorch Ligh
 
 Proof keys are too large to store on github download them from [this google drive](https://drive.google.com/drive/folders/1hM5NMIlcBYmYgpe5m1P0l9pX8LHl0XnQ?usp=sharing)
 
+Presentation of the project is in file *PragueHackathon2025@ETHGlobal.pptx*. and also avalible at [Pitch](https://pitch.com/v/prague-hackathon-2025-ethglobal-vmvuwv)
+
 ## Overview
 
 This model is trying to learn **sequence transformations**, like:
