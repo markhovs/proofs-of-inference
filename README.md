@@ -67,8 +67,8 @@ This project is a decentralized marketplace for Zero-Knowledge Machine Learning 
 - **Hedera**: Smart contracts for proof verification and rewards.
 - **Filecoin/Akave**: Decentralized storage for models, proofs, and logs.
 - **ezkl**: Quantization and zkML circuit compilation.
-- **Frontend**: React/Next.js (assumed; adapt as appropriate for your codebase).
-- **Backend**: Node.js/Python for proof orchestration (adapt as appropriate for your codebase).
+- **Frontend**: React/Next.js.
+- **Backend**: Node.js/Python for proof orchestration.
 
 ---
 
