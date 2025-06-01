@@ -85,7 +85,12 @@ export default function ModelPlayground() {
 
   const handleProofGeneration = async () => {
     try {
-      await generateProof();
+      // Create a hash from the input vector for the proof request
+      const inputString = JSON.stringify(inputVector);
+      const inputHash = btoa(inputString); // Base64 encode as a simple hash
+      const modelHash = selectedModel; // Use model ID as hash
+      
+      await generateProof(inputHash, modelHash);
     } catch (error) {
       // Error is handled by the hook
       console.error('Proof generation failed:', error);
