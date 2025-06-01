@@ -140,28 +140,59 @@ class AkaveService:
             return {"error": str(e)}
 
     async def upload_proof(self, model_id: str, proof_id: str, proof_data: bytes) -> dict:
-        key = f"proofs/{model_id}/{proof_id}.pf"
+        key = f"proofs/{model_id}/{proof_id}.json"
         try:
             response = self.s3.put_object(
                 Bucket=self.bucket,
                 Key=key,
                 Body=proof_data,
-                ContentType='application/octet-stream',
+                ContentType='application/json',
                 Metadata={'model_id': model_id}
             )
-            return {"response": response, "bucket": self.bucket, "key": key}
+            # Extract checksums from the Akave response
+            return {
+                "response": response, 
+                "bucket": self.bucket, 
+                "key": key,
+                "etag": response.get('ETag'),
+                "checksum_crc32": response.get('ChecksumCRC32'),
+                "checksum_crc32c": response.get('ChecksumCRC32C'),
+                "checksum_sha1": response.get('ChecksumSHA1'),
+                "checksum_sha256": response.get('ChecksumSHA256'),
+                "checksum_type": response.get('ChecksumType'),
+                "version_id": response.get('VersionId'),
+                "size": response.get('Size')
+            }
         except ClientError as e:
             return {"error": e.response['Error']}
         except Exception as e:
             return {"error": str(e)}
 
     async def download_proof(self, model_id: str, proof_id: str) -> dict:
-        key = f"proofs/{model_id}/{proof_id}.pf"
+        key = f"proofs/{model_id}/{proof_id}.json"
         try:
+            # Get object data
             response = self.s3.get_object(Bucket=self.bucket, Key=key)
             proof_data = response['Body'].read()
-            metadata = response.get('Metadata', {})
-            return {"data": proof_data, "bucket": self.bucket, "key": key, "metadata": metadata}
+            
+            # Get complete metadata including checksums
+            head_response = self.s3.head_object(Bucket=self.bucket, Key=key)
+            
+            return {
+                "data": proof_data, 
+                "bucket": self.bucket, 
+                "key": key, 
+                "metadata": response.get('Metadata', {}),
+                "etag": head_response.get('ETag'),
+                "checksum_crc32": head_response.get('ChecksumCRC32'),
+                "checksum_crc32c": head_response.get('ChecksumCRC32C'),
+                "checksum_sha1": head_response.get('ChecksumSHA1'),
+                "checksum_sha256": head_response.get('ChecksumSHA256'),
+                "checksum_type": head_response.get('ChecksumType'),
+                "last_modified": head_response.get('LastModified'),
+                "content_length": head_response.get('ContentLength'),
+                "version_id": head_response.get('VersionId')
+            }
         except ClientError as e:
             return {"error": e.response['Error']}
         except Exception as e:

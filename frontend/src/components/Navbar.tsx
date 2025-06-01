@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import WalletConnection from './WalletConnection';
 
 const navLinks = [
   { href: '/playground', label: 'Playground' },
@@ -19,17 +20,20 @@ export default function Navbar() {
         </div>
         <span className="text-white text-2xl font-bold tracking-tight">Proofs of Inference</span>
       </div>
-      <div className="flex gap-6">
-        {navLinks.map(link => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`text-lg font-medium transition-colors px-3 py-1 rounded-md
-              ${pathname === link.href ? 'bg-white text-blue-700 shadow' : 'text-white hover:bg-white/20'}`}
-          >
-            {link.label}
-          </Link>
-        ))}
+      <WalletConnection />
+      <div className="flex items-center gap-6">
+        <div className="flex gap-6">
+          {navLinks.map(link => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-lg font-medium transition-colors px-3 py-1 rounded-md
+                ${pathname === link.href ? 'bg-white text-blue-700 shadow' : 'text-white hover:bg-white/20'}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   );
